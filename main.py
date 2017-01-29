@@ -20,6 +20,9 @@ def main(win):
   ]
 
   board.draw()
+
+  win.addstr(board.size_y + 2, 0, 'Score: ' + str(score))
+
   key = 0
 
   while key != ord('q'):
