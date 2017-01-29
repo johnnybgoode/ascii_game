@@ -1,5 +1,8 @@
 Escape the '*'s!
 
+To play
+$ python main.py
+
 To move use
     w
   a   d
