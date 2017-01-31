@@ -64,7 +64,9 @@ class Board:
     self.win.addstr(self.size_y, int(x), game_over)
 
   def draw_path(self, cell):
-    self.draw_cell(cell, self.path_char)
+    # don't draw paths over player
+    if (self.board[cell[1]][cell[0]] == self.empty_char):
+      self.draw_cell(cell, self.path_char)
 
   def draw_cell(self, cell, char):
     self.board[cell[1]][cell[0]] = char
