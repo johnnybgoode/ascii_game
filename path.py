@@ -2,17 +2,18 @@ import pdb
 from collections import deque
 
 class Path:
-  def __init__(self, start, end, steps, board):
-    self.path = deque()
-    self.basic_path = []
-
+  def __init__(self, start, goal, board):
+    self.found = False
     self.start = start
-    self.goal = end
-    self.steps = steps
+    self.goal = goal
     self.board = board
     self.steps = self.board.get_size()
-    self.found = False
+    self.initial_neighbors = self.board.get_open_neighbors(self.start)
 
+    self.g_lo = 10
+    self.g_hi = 14
+
+    self.path = deque()
     self.scores = {
       self.start: {
         'parent': None,
@@ -20,20 +21,16 @@ class Path:
         'h': 0
       }
     }
-
     self.open_cells = [
       self.start
     ]
     self.closed_cells = []
 
-    self.g_lo = 10
-    self.g_hi = 14
-
   def get_path(self):
-    while not self.found:
+    while not self.found and self.initial_neighbors:
       last_step = self.path_step()
 
-    self.build_path(self.start, last_step)
+    self.build_path(last_step)
 
     return self.path
 
@@ -47,7 +44,9 @@ class Path:
     # if a path is not found after n steps eliminate the first choice
     # and start over
     if (self.steps == 0):
-      self.closed_cells.append(self.build_path(self.start, current)[1])
+      path = self.build_path(current)
+      self.closed_cells.append(path[1])
+      del self.initial_neighbors[path[1]]
       return
 
     for neighbor in self.board.get_open_neighbors(current):
@@ -69,30 +68,29 @@ class Path:
 
     return self.path_step()
 
-  def build_path(self, start, current):
-    if (current == start):
+  def build_path(self, current):
+    if (self.scores[current]['parent'] == None):
       return
 
     self.path.appendleft(current)
     self.board.draw_path(current)
 
-    return self.build_path(start, self.scores[current]['parent'])
+    return self.build_path(self.scores[current]['parent'])
 
   def min_f(self):
     min_f = None
-    min_cell = None
 
     for i in range(len(self.open_cells)):
       cell = self.open_cells[i]
       f = self.scores[cell]['g'] + self.scores[cell]['h']
 
-      if (min_f == None or f < min_f):
+      if (f < min_f or min_f == None):
         min_f = f
         min_i = i
 
-    cell = self.open_cells[i]
+    cell = self.open_cells[min_i]
 
-    del self.open_cells[i]
+    del self.open_cells[min_i]
 
     return cell
 
