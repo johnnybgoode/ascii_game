@@ -1,104 +1,102 @@
 import pdb
+from collections import deque
 
 class Path:
-  def __init__(self, start, end, steps, board):
-    self.path = []
-
+  def __init__(self, start, goal, board):
+    self.found = False
     self.start = start
-    self.end = end
-    self.steps = steps
+    self.goal = goal
     self.board = board
-
-    self.open_cells = {}
-    self.closed_cells = []
+    self.steps = self.board.get_size()
+    self.initial_neighbors = self.board.get_open_neighbors(self.start)
 
     self.g_lo = 10
-    self.g_hi = 12
+    self.g_hi = 14
 
-    self.directions = [
-        (-1, -1),
-        (0, -1),
-        (1, -1),
-        (1, 0),
-        (1, 1),
-        (0, 1),
-        (-1, 1),
-        (-1, 0),
-      ]
+    self.path = deque()
+    self.scores = {
+      self.start: {
+        'parent': None,
+        'g': 0,
+        'h': 0
+      }
+    }
+    self.open_cells = [
+      self.start
+    ]
+    self.closed_cells = []
 
   def get_path(self):
-    self.path_step(self.start, self.end)
+    while not self.found and self.initial_neighbors:
+      last_step = self.path_step()
+
+    self.build_path(last_step)
 
     return self.path
 
-  def path_step(self, start, end):
-    next_steps = []
+  def path_step(self):
+    current = self.min_f()
 
+    if (current == self.goal):
+      self.found = True
+      return current
+
+    # if a path is not found after n steps eliminate the first choice
+    # and start over
     if (self.steps == 0):
+      path = self.build_path(current)
+      self.closed_cells.append(path[1])
+      del self.initial_neighbors[path[1]]
       return
 
-    for direction in self.directions:
-      cell = (start[0] + direction[0], start[1] + direction[1])
-
-      if (cell == end):
-        self.path.append(cell)
-        return
-
-      if (self.board.is_wall(cell)):
-        self.closed_cells.append(cell)
-
-      if (cell in self.closed_cells):
+    for neighbor in self.board.get_open_neighbors(current):
+      if neighbor in self.closed_cells:
         continue
 
-      next_steps.append(cell)
+      g = self.scores[current]['g'] + self.calc_g(current, neighbor)
 
-      self.open_cells[cell] = {
-        'parent': start,
-        'g': self.calc_g(direction, start),
-        'h': self.calc_h(cell, self.end),
-      }
+      if (neighbor not in self.scores or g < self.scores[neighbor]['g']):
+        self.open_cells.append(neighbor)
 
-
-    cell = self.min_f(next_steps)
-
-    # @todo preserve scores to allow path to be modified by
-    # following iterations
-    #
-    #if (start in self.open_cells and cell in self.open_cells):
-    #  if (self.open_cells[cell]['parent'] == self.open_cells[start]['parent']):
-    #    self.path.pop()
-    #    del self.open_cells[start]
-    #    #self.board.clear_path(start)
-
-    self.closed_cells.append(start)
-
-    if (start in self.open_cells):
-      del self.open_cells[start]
-
-    self.path.append(cell)
-    self.board.draw_path(cell)
+        self.scores[neighbor] = {
+          'parent': current,
+          'g': g,
+          'h': self.calc_h(neighbor, self.goal),
+        }
 
     self.steps -= 1
 
-    return self.path_step(cell, end)
+    return self.path_step()
 
-  def min_f(self, cells):
+  def build_path(self, current):
+    if (self.scores[current]['parent'] == None):
+      return
+
+    self.path.appendleft(current)
+    self.board.draw_path(current)
+
+    return self.build_path(self.scores[current]['parent'])
+
+  def min_f(self):
     min_f = None
-    ret_cell = None
 
-    for cell in cells:
-      f = self.open_cells[cell]['g'] + self.open_cells[cell]['h']
-      if (min_f == None or f < min_f):
+    for i in range(len(self.open_cells)):
+      cell = self.open_cells[i]
+      f = self.scores[cell]['g'] + self.scores[cell]['h']
+
+      if (f < min_f or min_f == None):
         min_f = f
-        ret_cell = cell
+        min_i = i
 
-    return ret_cell
+    cell = self.open_cells[min_i]
+
+    del self.open_cells[min_i]
+
+    return cell
 
 
-  def calc_g(self, cell, parent):
-    g = self.g_lo if ((abs(cell[0]) + abs(cell[1])) > 1) else self.g_hi
-
-    return self.open_cells[parent]['g'] + g if (parent in self.open_cells) else g
+  def calc_g(self, current, neighbor):
+    return self.g_hi if ((abs(current[0]) - abs(neighbor[0])) + (abs(current[1]) - abs(neighbor[1]))) > 1 else self.g_lo
 
   def calc_h(self, from_cell, to_cell):
     return abs(to_cell[0] - from_cell[0]) + abs(to_cell[1] - from_cell[1])

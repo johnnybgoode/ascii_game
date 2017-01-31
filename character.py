@@ -4,11 +4,8 @@ class Character:
     self.where()
 
   def move(self, new_pos):
-    if (self.board.is_wall(new_pos)):
-      return
-
-    self.board.move_player(self.pos, new_pos, self.player_char)
-    self.pos = new_pos
+    if self.board.move_player(self.pos, new_pos, self.player_char):
+      self.pos = new_pos
 
   def get_pos(self):
     return self.pos

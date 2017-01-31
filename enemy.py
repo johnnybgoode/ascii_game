@@ -10,7 +10,7 @@ class Enemy(Character):
     Character.__init__(self, board)
 
   def move(self, player_pos):
-    path = Path(self.pos, player_pos, self.level, self.board)
+    path = Path(self.pos, player_pos, self.board)
 
     path = path.get_path()
 
