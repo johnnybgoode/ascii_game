@@ -39,19 +39,14 @@ def main(win):
       command = chr(command)
       commands.put(command)
 
-      game.player.move(command)
       #game.score += 1
-
-      if command == 'q':
-        game.over = True
-        break
 
   def enemies(game):
     while not game.over:
       for enemy in game.enemies:
         enemy.move(game.player.get_pos())
 
-      time.sleep(0.5)
+      time.sleep(0.4)
 
   def display(commands, game):
     while not game.over:
@@ -62,10 +57,13 @@ def main(win):
       except Queue.Empty, e:
         command = ""
 
-
       if command == 'q':
         game.over = True
         break
+
+      game.player.move(command)
+
+      game.win.addstr(game.board.size_y + 4, 0, 'Input: "' + str(command) + '"')
 
       for enemy in game.enemies:
         if (game.player.get_pos() == enemy.get_pos()):
@@ -74,9 +72,10 @@ def main(win):
           break
 
       game.board.draw()
-      win.addstr(game.board.size_y + 2, 0, 'Score: ' + str(game.score))
+      game.win.refresh()
+      #win.addstr(game.board.size_y + 2, 0, 'Score: ' + str(game.score))
 
-      time.sleep(0.3)
+      time.sleep(0.2)
 
   displayer = threading.Thread(None, display, None, (commands, game), {})
 
