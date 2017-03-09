@@ -1,6 +1,6 @@
 from character import Character
 from path import Path
-import pdb
+import random
 
 class Enemy(Character):
   def __init__(self, board, level):
@@ -31,3 +31,29 @@ class Enemy(Character):
     closed_cells = []
 
     return move_step(player_pos)
+
+  def where(self):
+    board = self.board.get_board()
+    tries = 0
+    max_tries = 13
+    x = random.randint(1, len(board[0]) - 1)
+    y = random.randint(1, len(board) - 1)
+
+    while True:
+      if (tries >= max_tries):
+        break
+
+      if not self.board.is_open((x, y)):
+        self.pos = (x, y)
+        self.board.draw_cell(self.pos, self.player_char)
+        break
+
+      if x < (len(board[0]) - 1):
+        x += 1
+      elif y < len(board):
+        x = 1
+        y += 1
+      else:
+        break
+
+      tries += 1
