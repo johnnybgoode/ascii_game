@@ -7,16 +7,23 @@ class Enemy(Character):
     self.lookup_char = 'E'
     self.player_char = '*'
     self.level = level
+    self.delay = level
+
     Character.__init__(self, board)
 
   def move(self, player_pos):
-    path = Path(self.pos, player_pos, self.board)
+    self.delay -= 1
 
-    path = path.get_path()
+    if (self.delay == 0):
+      path = Path(self.pos, player_pos, self.board)
 
-    new_pos = path[0]
+      path = path.get_path()
 
-    Character.move(self, new_pos)
+      new_pos = path[0]
+
+      Character.move(self, new_pos)
+
+      self.delay = self.level
 
   def get_path(self, player_pos):
     board = self.board.get_board()

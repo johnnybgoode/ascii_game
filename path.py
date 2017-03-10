@@ -73,7 +73,6 @@ class Path:
       return
 
     self.path.appendleft(current)
-    self.board.draw_path(current)
 
     return self.build_path(self.scores[current]['parent'])
 
