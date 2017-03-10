@@ -34,19 +34,19 @@ class Enemy(Character):
 
   def where(self):
     board = self.board.get_board()
-    tries = 0
+    i = 0
     max_tries = 13
     x = random.randint(1, len(board[0]) - 1)
     y = random.randint(1, len(board) - 1)
 
     while True:
-      if (tries >= max_tries):
+      if (i >= max_tries):
         break
 
-      if not self.board.is_open((x, y)):
+      if self.board.is_open((x, y)):
         self.pos = (x, y)
         self.board.draw_cell(self.pos, self.player_char)
-        break
+        return
 
       if x < (len(board[0]) - 1):
         x += 1
@@ -56,4 +56,6 @@ class Enemy(Character):
       else:
         break
 
-      tries += 1
+      i += 1
+
+    self.pos = False
