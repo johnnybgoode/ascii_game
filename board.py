@@ -1,4 +1,3 @@
-import pdb
 import math
 
 class Board:
@@ -58,24 +57,34 @@ class Board:
 
     return neighbors
 
-  def game_over(self):
-    game_over = 'Game Over!'
-    x = math.floor((self.size_x / 2) - (len(game_over) / 2))
-    self.win.addstr(self.size_y, int(x), game_over)
+  def show_message(self, message):
+    self.win.move(self.size_y + 1, 0)
+    self.win.clrtoeol()
+
+    x = math.floor((self.size_x / 2) - (len(message) / 2))
+    self.win.addstr(self.size_y, int(x), str(message))
 
   def draw_path(self, cell):
     # don't draw paths over player
     if (self.board[cell[1]][cell[0]] == self.empty_char):
       self.draw_cell(cell, self.path_char)
 
-  def draw_cell(self, cell, char):
+  def set_cell(self, cell, char):
     self.board[cell[1]][cell[0]] = char
 
   def is_wall(self, cell):
     return (self.board[cell[1]][cell[0]] == self.wall_char)
+
+  def is_open(self, cell):
+    return self.board[cell[1]][cell[0]] == self.empty_char
 
   def get_size(self):
     return self.size_x * self.size_y
 
   def get_board(self):
     return self.board
+
+  #deprecated
+  def draw_cell(self, cell, char):
+    self.win.addstr(cell[1], cell[0], str(char))
+
