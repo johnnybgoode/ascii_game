@@ -72,10 +72,6 @@ class Board:
   def set_cell(self, cell, char):
     self.board[cell[1]][cell[0]] = char
 
-  #deprecated
-  def draw_cell(self, cell, char):
-    self.win.addstr(cell[1], cell[0], str(char))
-
   def is_wall(self, cell):
     return (self.board[cell[1]][cell[0]] == self.wall_char)
 
@@ -87,3 +83,8 @@ class Board:
 
   def get_board(self):
     return self.board
+
+  #deprecated
+  def draw_cell(self, cell, char):
+    self.win.addstr(cell[1], cell[0], str(char))
+
