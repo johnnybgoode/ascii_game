@@ -3,18 +3,17 @@ from path import Path
 import random
 
 class Enemy(Character):
-  def __init__(self, board, level):
-    self.lookup_char = 'E'
+  def __init__(self, board, delay):
     self.player_char = '*'
-    self.level = level
-    self.delay = level
+    self.delay = delay
+    self.wait = delay
 
     Character.__init__(self, board)
 
   def move(self, player_pos):
-    self.delay -= 1
+    self.wait -= 1
 
-    if (self.delay == 0):
+    if (self.wait == 0):
       path = Path(self.pos, player_pos, self.board)
 
       path = path.get_path()
@@ -23,7 +22,7 @@ class Enemy(Character):
 
       Character.move(self, new_pos)
 
-      self.delay = self.level
+      self.wait = self.delay
 
   def get_path(self, player_pos):
     board = self.board.get_board()
@@ -32,7 +31,7 @@ class Enemy(Character):
 
     return move_step(player_pos)
 
-  def where(self):
+  def spawn(self):
     board = self.board.get_board()
     i = 0
     max_tries = 13
@@ -45,12 +44,12 @@ class Enemy(Character):
 
       if self.board.is_open((x, y)):
         self.pos = (x, y)
-        self.board.draw_cell(self.pos, self.player_char)
+        self.board.set_cell(self.pos, self.player_char)
         return
 
       if x < (len(board[0]) - 1):
         x += 1
-      elif y < len(board):
+      elif y < len(board) - 1:
         x = 1
         y += 1
       else:
