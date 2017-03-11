@@ -6,10 +6,12 @@ from enemy import Enemy
 
 class Game:
   def __init__(self, win):
-    self.framerate = 1/60
     self.board = Board("board.txt")
+    self.framerate = 60 # frames per second
+    self.frame = 1.0 / float(self.framerate)
+    self.ticks = 0
+    self.seconds = 0
     self.over = False
-    self.score = 0
     self.win = win;
 
     self.win.nodelay(True)
@@ -39,13 +41,22 @@ class Game:
           self.show_message('Game Over', (0,2))
           break
 
-      self.score += self.framerate
       self.show_message('Score: ' + str(self.seconds))
 
-      time.sleep(self.framerate)
+      self.tick()
+
 
     while key != ord('q'):
       key = self.win.getch();
+
+  def tick(self):
+    self.ticks += 1
+
+    if (self.ticks % self.framerate == 0):
+      self.seconds += 1
+      self.ticks = 0
+
+    time.sleep(self.frame)
 
   def spawn(self, n):
     i = 0;
