@@ -11,6 +11,8 @@ class Game:
     self.frame = 1.0 / float(self.framerate)
     self.ticks = 0
     self.seconds = 0
+    self.delay_adjust = 3
+    self.max_delay = self.framerate + self.delay_adjust
     self.over = False
     self.win = win;
 
@@ -29,6 +31,10 @@ class Game:
 
       if key > 0:
         self.player.move(chr(key))
+
+      if (self.seconds > 0 and self.ticks == 0 and self.seconds % 10 == 0):
+        self.spawn(1)
+        self.max_delay -= self.delay_adjust
 
       for enemy in self.enemies:
         enemy.move(self.player.get_pos())
@@ -59,9 +65,11 @@ class Game:
     time.sleep(self.frame)
 
   def spawn(self, n):
-    i = 0;
+    i = 0
     while i < n:
-      enemy = Enemy(self.board, 60)
+      min_delay = self.max_delay - 3
+      delay = random.randint(min_delay, self.max_delay)
+      enemy = Enemy(self.board, delay)
       if not enemy.get_pos():
         del enemy
         continue

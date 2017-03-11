@@ -3,17 +3,17 @@ from path import Path
 import random
 
 class Enemy(Character):
-  def __init__(self, board, level):
+  def __init__(self, board, delay):
     self.player_char = '*'
-    self.level = level
-    self.delay = level
+    self.delay = delay
+    self.wait = delay
 
     Character.__init__(self, board)
 
   def move(self, player_pos):
-    self.delay -= 1
+    self.wait -= 1
 
-    if (self.delay == 0):
+    if (self.wait == 0):
       path = Path(self.pos, player_pos, self.board)
 
       path = path.get_path()
@@ -22,7 +22,7 @@ class Enemy(Character):
 
       Character.move(self, new_pos)
 
-      self.delay = self.level
+      self.wait = self.delay
 
   def get_path(self, player_pos):
     board = self.board.get_board()
