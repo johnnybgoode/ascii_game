@@ -50,7 +50,7 @@ class Enemy(Character):
 
       if x < (len(board[0]) - 1):
         x += 1
-      elif y < len(board):
+      elif y < len(board) - 1:
         x = 1
         y += 1
       else:
