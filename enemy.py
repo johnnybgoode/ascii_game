@@ -4,7 +4,6 @@ import random
 
 class Enemy(Character):
   def __init__(self, board, level):
-    self.lookup_char = 'E'
     self.player_char = '*'
     self.level = level
     self.delay = level
@@ -32,7 +31,7 @@ class Enemy(Character):
 
     return move_step(player_pos)
 
-  def where(self):
+  def spawn(self):
     board = self.board.get_board()
     i = 0
     max_tries = 13
