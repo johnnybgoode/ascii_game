@@ -45,7 +45,7 @@ class Enemy(Character):
 
       if self.board.is_open((x, y)):
         self.pos = (x, y)
-        self.board.draw_cell(self.pos, self.player_char)
+        self.board.set_cell(self.pos, self.player_char)
         return
 
       if x < (len(board[0]) - 1):
