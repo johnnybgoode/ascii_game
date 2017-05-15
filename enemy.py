@@ -24,13 +24,6 @@ class Enemy(Character):
 
       self.wait = self.delay
 
-  def get_path(self, player_pos):
-    board = self.board.get_board()
-    open_cells = {}
-    closed_cells = []
-
-    return move_step(player_pos)
-
   def spawn(self):
     board = self.board.get_board()
     i = 0
