@@ -30,43 +30,44 @@ class Path:
     while not self.found and self.initial_neighbors:
       last_step = self.path_step()
 
-    self.build_path(last_step)
+    if last_step:
+      self.build_path(last_step)
 
     return self.path
 
   def path_step(self):
-    current = self.min_f()
+    while not self.found:
+      current = self.min_f()
 
-    if (current == self.goal):
-      self.found = True
-      return current
+      if (current == self.goal):
+        self.found = True
+        return current
 
-    # if a path is not found after n steps eliminate the first choice
-    # and start over
-    if (self.steps == 0):
-      path = self.build_path(current)
-      self.closed_cells.append(path[1])
-      del self.initial_neighbors[path[1]]
-      return
+      # if a path is not found after n steps eliminate the first choice
+      # and start over
+      if (self.steps == 0):
+        pdb.set_trace();
+        path = self.build_path(current)
+        self.closed_cells.append(path[1])
+        del self.initial_neighbors[path[1]]
+        return
 
-    for neighbor in self.board.get_open_neighbors(current):
-      if neighbor in self.closed_cells:
-        continue
+      for neighbor in self.board.get_open_neighbors(current):
+        if neighbor in self.closed_cells:
+          continue
 
-      g = self.scores[current]['g'] + self.calc_g(current, neighbor)
+        g = self.scores[current]['g'] + self.calc_g(current, neighbor)
 
-      if (neighbor not in self.scores or g < self.scores[neighbor]['g']):
-        self.open_cells.append(neighbor)
+        if (neighbor not in self.scores or g < self.scores[neighbor]['g']):
+          self.open_cells.append(neighbor)
 
-        self.scores[neighbor] = {
-          'parent': current,
-          'g': g,
-          'h': self.calc_h(neighbor, self.goal),
-        }
+          self.scores[neighbor] = {
+            'parent': current,
+            'g': g,
+            'h': self.calc_h(neighbor, self.goal),
+          }
 
-    self.steps -= 1
-
-    return self.path_step()
+      self.steps -= 1
 
   def build_path(self, current):
     if (self.scores[current]['parent'] == None):
